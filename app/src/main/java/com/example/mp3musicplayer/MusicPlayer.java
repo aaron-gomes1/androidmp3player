@@ -9,6 +9,7 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Main class of the system
@@ -347,39 +348,42 @@ public class MusicPlayer
     public void addPlayListSongs(PlayList playlist)
     {
         File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        for (File f : file.listFiles()) {
-            if (f.listFiles() != null) {
-                PlayList play = new PlayList(f.getName(), PlayListType.PLAYLIST);
-                for (File p : f.listFiles()) {
-                    if (p.getName().contains(".mp3")) {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.listFiles() != null) {
+                    PlayList play = new PlayList(f.getName(), PlayListType.PLAYLIST);
+                    for (File p : f.listFiles()) {
+                        if (p.getName().contains(".mp3")) {
 
-                        Uri uri = (Uri) Uri.fromFile(p);
+                            Uri uri = (Uri) Uri.fromFile(p);
 
-                        MediaMetadataRetriever mediaMetadataRetriever = (MediaMetadataRetriever) new MediaMetadataRetriever();
-                        mediaMetadataRetriever.setDataSource(context, uri);
+                            MediaMetadataRetriever mediaMetadataRetriever = (MediaMetadataRetriever) new MediaMetadataRetriever();
+                            mediaMetadataRetriever.setDataSource(context, uri);
 
-                        String title = (String) mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                        String artist = (String) mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                            String title = (String) mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                            String artist = (String) mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 
-                        Song s = getSongByName(title, artist);
-                        if (s == null) {
-                            s = new Song(p, title, artist);
+                            Song s = getSongByName(title, artist);
+                            if (s == null) {
+                                s = new Song(p, title, artist);
+                            }
+
+                            play.add(s);
+                            playlist.add(s);
                         }
+                    }
+                    settings.setPlayListsType(play);
 
-                        play.add(s);
-                        playlist.add(s);
+                    // Checks if the playlist has any songs
+                    if (play.getPlayList().size() != 0) {
+                        shuffle();
+                        playlists.add(play);
                     }
                 }
-                settings.setPlayListsType(play);
-
-                // Checks if the playlist has any songs
-                if (play.getPlayList().size() != 0) {
-                    shuffle();
-                    playlists.add(play);
-                }
             }
+            currentPlayList = playlist;
         }
-        currentPlayList = playlist;
     }
 
     public Player getPlayer()

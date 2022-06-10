@@ -31,11 +31,18 @@ public class PlayerUpdater extends Updater
         super(context, screenShowing);
     }
 
+    /**
+     * Sets the current music player
+     * @param musicPlayer The music player to be updated
+     */
     public void setMusicPlayer(MusicPlayer musicPlayer)
     {
         this.musicPlayer = musicPlayer;
     }
 
+    /**
+     * Sets up the initial screen state
+     */
     public void setup()
     {
         setScreenSizes();
@@ -49,7 +56,7 @@ public class PlayerUpdater extends Updater
      */
     public void updateLabels()
     {
-        if (getScreenShowing().isPlayerScreenShowing()) {
+        if (getScreenShowing().isPlayerScreenShowing() && musicPlayer.getCurrentPlayList().play() != null) {
 
             PlayList currentPlayList = musicPlayer.getCurrentPlayList();
             Player player = musicPlayer.getPlayer();
@@ -128,7 +135,6 @@ public class PlayerUpdater extends Updater
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                //params.width = gridLayout.getWidth();
                 params.setGravity(Gravity.CENTER);
                 params.topMargin = 10;
                 params.bottomMargin = 10;
@@ -153,7 +159,6 @@ public class PlayerUpdater extends Updater
                         TextView text = (TextView) v;
                         String[] names = ((String) text.getText()).split("\n");
                         musicPlayer.setClickSong(names);
-                        //return false;
                     }
                 });
 
@@ -163,7 +168,6 @@ public class PlayerUpdater extends Updater
                 param.setGravity(Gravity.FILL);
                 //param.rightMargin = 5;
                 //param.topMargin = 5;
-                //param.setGravity(Gravity.FILL);
                 param.columnSpec = GridLayout.spec(0);
                 param.rowSpec = GridLayout.spec(r + 1);
                 text.setLayoutParams(param);
@@ -216,7 +220,6 @@ public class PlayerUpdater extends Updater
             {
                 if (hasChanged) {
                     musicPlayer.playPlayList((String) parent.getItemAtPosition(position));
-                    //displayPLaylistSongs();
                     displayPLaylistSongs();
                 }
                 hasChanged = true;
@@ -233,7 +236,7 @@ public class PlayerUpdater extends Updater
 
     public void colourCurrentSongInPlaylist()
     {
-        if (getScreenShowing().isPlayerScreenShowing()) {
+        if (getScreenShowing().isPlayerScreenShowing() && musicPlayer.getCurrentSong() != null) {
             GridLayout gridLayout = ((Activity) getContext()).findViewById(R.id.playlists);
             for (int index = 0; index < gridLayout.getChildCount(); index++) {
                 TextView textView = (TextView) gridLayout.getChildAt(index);
@@ -281,8 +284,6 @@ public class PlayerUpdater extends Updater
         p.width = (int) (width * 0.7);
         p.gravity = Gravity.CENTER;
         gridLayout.setLayoutParams(p);
-
-        //timeBar.setMinimumWidth(new_width);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.width = (int) (width * 0.9);
